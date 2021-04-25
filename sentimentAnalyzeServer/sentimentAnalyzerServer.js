@@ -20,6 +20,8 @@ function getNLUInstance() {
     return naturalLanguageUnderstanding;
 }
 
+const NLU = new getNLUInstance();
+
 app.use(express.static('client'))
 
 const cors_app = require('cors');
@@ -29,21 +31,92 @@ app.get("/",(req,res)=>{
     res.render('index.html');
   });
 
-app.get("/url/emotion", (req,res) => {
+app.get("/url/emotion", (req, res) => {
+    const url = req.query.url;
+    const params = {
+        'url': url,
+        'features': {
+            "emotion": {
+                'document': true
+            }
+        }
+    }
 
-    return res.send({"happy":"90","sad":"10"});
+    NLU.analyze(params)
+        .then(response => {
+            // console.log('Server side responding:')
+            // console.log(response.result);
+            res.send(response.result);
+        })
+        .catch(error => {
+            return res.status(500).send({ success: false, message: "Error in /url/emotion" })
+        });
 });
 
 app.get("/url/sentiment", (req,res) => {
-    return res.send("url sentiment for "+req.query.url);
+    const url = req.query.url;
+    const params = {
+        'url': url,
+        'features': {
+            "sentiment": {
+                'document': true
+            }
+        }
+    }
+
+    NLU.analyze(params)
+        .then(response => {
+            // console.log('Server side responding:')
+            // console.log(response.result);
+            res.send(response.result);
+        })
+        .catch(error => {
+            return res.status(500).send({ success: false, message: "Error in /url/sentiment" })
+        });
 });
 
 app.get("/text/emotion", (req,res) => {
-    return res.send({"happy":"10","sad":"90"});
+    const text = req.query.text;
+    const params = {
+        'text': text,
+        'features': {
+            "emotion": {
+                'document': true
+            }
+        }
+    }
+
+    NLU.analyze(params)
+        .then(response => {
+            // console.log('Server side responding:')
+            // console.log(response.result);
+            res.send(response.result);
+        })
+        .catch(error => {
+            return res.status(500).send({ success: false, message: "Error in /text/emotion" })
+        });
 });
 
 app.get("/text/sentiment", (req,res) => {
-    return res.send("text sentiment for "+req.query.text);
+    const text = req.query.text;
+    const params = {
+        'text': text,
+        'features': {
+            "sentiment": {
+                'document': true
+            }
+        }
+    }
+
+    NLU.analyze(params)
+        .then(response => {
+            // console.log('Server side responding:')
+            // console.log(response.result);
+            res.send(response.result);
+        })
+        .catch(error => {
+            return res.status(500).send({ success: false, message: "Error in /text/sentiment" })
+        });
 });
 
 let server = app.listen(8080, () => {
